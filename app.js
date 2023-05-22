@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fast2sms = require('fast-two-sms');
 const app = express();
+let reqotp;
 
 // Set up view engine
 app.set('view engine', 'ejs');
@@ -28,17 +29,17 @@ app.post('/login', (req, res) => {
     const randomNumber = Math.floor(Math.random() * 10000);
   
     // Pad the number with leading zeros if necessary
-    const otp = randomNumber.toString().padStart(4, '0');
+    const final = randomNumber.toString().padStart(4, '0');
   
-    return otp;
+    return final;
   }
   
   // Example usage:
-  const otp = otpcode();
+   reqotp = otpcode();
 
   var options={
     authorization:process.env.AUTHORIZATION,
-    message:`Your Login code:${otp}`,
+    message:`Your Login code:${reqotp}`,
     numbers:[mobileNo]
   }
 
@@ -50,10 +51,15 @@ app.post('/login', (req, res) => {
         console.log(err);
     })
 
-  if (username === 'admin' && password === 'password') {
+  res.render('otpcheck')
+});
+
+app.post('/otpcheck',(req,res)=>{
+   const {otp}= req.body
+   if(otp===reqotp) {
     res.send('Login successful!');
   } else {
-    res.send('Invalid username or password');
+    res.send('Invalid OTP!!');
   }
 });
 
