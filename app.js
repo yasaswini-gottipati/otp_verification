@@ -1,70 +1,99 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const fast2sms = require('fast-two-sms');
-const app = express();
-let reqotp;
+const express=require("express");
+const bodyparser=require("body-parser");
+const mongoose=require("mongoose");
+const accountsid="AC5bbe331ea954d669beeafb90ec17a332";
+const authkey="751ca4f7a9133565dfa4957aed79261d";
+const client=require("twilio")(accountsid,authkey);
+const app=express();
 
-// Set up view engine
+mongoose.connect("mongodb://127.0.0.1:27017/Check",{useNewUrlParser :true,useUnifiedTopology:true}).then(()=>{
+  console.log("connected with mongodb")
+  }).catch((e)=>{
+    console.log(e);
+  })
+
+
 app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
 
-// Parse URL-encoded bodies (as sent by HTML forms)
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json());
 
-// Serve static files from the "public" directory
 app.use(express.static('public'));
 
-// Define routes
-app.get('/', (req, res) => {
+const userSchema=new mongoose.Schema({
+  username:String,
+  mobileNo:String
+})
+
+const User = new mongoose.model("User",userSchema);
+
+
+let OTP,user;
+
+
+app.get("/",(req,res)=>{
   res.render('login');
 });
 
-app.post('/login', (req, res) => {
-  const { username, mobileNo } = req.body;
+app.post("/login",async(req,res)=>{
+  try{
+    const {username,mobileNo}=req.body;
 
-  // Perform authentication logic here
-  // For simplicity, we're just checking for a hardcoded username and password
-  function otpcode() {
-    // Generate a random number between 0 and 9999
-    const randomNumber = Math.floor(Math.random() * 10000);
-  
-    // Pad the number with leading zeros if necessary
-    const final = randomNumber.toString().padStart(4, '0');
-  
-    return final;
-  }
-  
-  // Example usage:
-   reqotp = otpcode();
+    const isuser =await User.findOne({mobileNo});
+    if(isuser){
+      return res
+      .status(400)
+      .json({msg:"user with same number already exists!!"});
+    }
 
-  var options={
-    authorization:process.env.AUTHORIZATION,
-    message:`Your Login code:${reqotp}`,
-    numbers:[mobileNo]
-  }
+    user =new User({
+      username,
+      mobileNo
+    });
 
-  fast2sms.sendMessage(options)
-    .then((resp)=>{
-        console.log(resp);
-    })
-    .catch((err)=>{
-        console.log(err);
-    })
+    let digits="0123456789";
+    OTP="";
+    for(let i=0;i<4;i++)
+    {
+      OTP+=digits[Math.floor(Math.random()*10)];
+    }
 
-  res.render('otpcheck')
-});
+    await client.messages
+      .create({
+        body:`your Foodporium verification code is ${OTP} `,
+        to:"+917013251153",
+        from:'+13158175952'
+       }).then(() => {//res.status(200).json({msg: "message sent"})
+        console.log("message sent");
+      })
+         .catch(err =>console.log(err));
 
-app.post('/otpcheck',(req,res)=>{
-   const {otp}= req.body
-   if(otp===reqotp) {
-    res.send('Login successful!');
-  } else {
-    res.send('Invalid OTP!!');
+        res.render('otpcheck')
+  } catch(e){
+    res.status(500).json({error:e.message})
   }
 });
 
-// Start the server
-const port = 3000;
+app.post("/login/verify",async(req,res)=>{
+  try{
+    console.log(req.body);
+     const {otp}=req.body;
+     if( otp!=OTP )
+     {
+      //return res.status(400).json({msg:"Incorrect otp"});
+      res.end("<h1>Incorrect otp</h1>");
+     }
+     user=await user.save();
+    res.end("<h1>correct otp</h1>");
+  }catch(e){
+    res.status(500).json({error:e.message})
+  }
+});
+
+
+
+
+const port = 8000;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
