@@ -20,6 +20,7 @@
     "mongoose": "^7.2.1",
     "mongose": "^0.0.2-security",
     "nodemon": "^2.0.22",
+    "path": "^0.12.7",
     "twilio": "^4.11.1"
   }
 }

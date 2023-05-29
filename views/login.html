@@ -1,0 +1,230 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Login Page</title>
+</head>
+<body>
+  <h1>Login</h1>
+  <form method="post" action="/login">
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+      <label for="mobileNo">mobileNo:</label>
+      <input type="text" id="mobileNo" name="mobileNo" minlength="13" maxlength="13" required>
+    </div>
+    <div>
+      <input type="submit" value="Send OTP">
+    </div>
+  </form>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foodporium</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="../public/login.css" />
+  </head>
+  <body>
+    <div class="chandu">
+      <div class="login_form_container">
+        <form method="post" action="/login">
+          <div class="login_form">
+            <h2>Login</h2>
+            <div class="input_group">
+              <i class="fa fa-user"></i>
+              <input
+                type="text"
+                placeholder="Username"
+                name="username"
+                class="input_text"
+                autocomplete="off"
+              />
+            </div>
+            <div class="input_group">
+              <i class="fa fa-mobile"></i>
+              <input
+                type="text"
+                placeholder="Phone number"
+                name="mobileNo"
+                class="input_text"
+                autocomplete="off"
+              />
+            </div>
+            <div class="button_group" id="login_button">
+              <button type="submit">Get OTP</button>
+            </div>
+          </div>
+        </form>
+      </div>                                   
+    </div>
+  </body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodPorium</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <!-- <link rel="stylesheet" href="intvice2.css"> -->
+      <style>
+  body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    letter-spacing: 1px;
+    overflow: hidden;
+    margin: 0;
+    background: rgba(0,212,255,1);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(116,9,121,1) 35%, rgba(224,27,200,1) 85%, rgba(0,212,255,1) 100%);
+}
+.login_form_container{
+    position: relative;
+    width: 400px;
+    height: 470px;
+    max-width: 400px;
+    max-height: 470px;
+    background: #1230d8;
+    border-radius: 50px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 70px;
+}
+.login_form_container::before{
+    
+    position: absolute;
+    width: 170%;
+    height: 170%;
+    content: '';
+    background-image: conic-gradient(transparent, transparent, transparent, #ee00ff);
+    
+
+}
+.login_form{
+    position: absolute;
+    content: '';
+    background-color: #0a070e;
+    border-radius: 50px 5px;
+    inset: 5px;
+    padding: 50px 40px;
+    z-index: 10;
+    color: #430aae; 
+} 
+h2{
+    font-size: 40px;
+    font-weight: 600;
+    text-align: center;
+}
+i{
+  font-size: 6rem;
+}
+.input_group{
+    margin-top: 40px;
+    position:relative;
+    display:flex;
+    align-items: center;
+    justify-content:start;
+}
+.input_text{
+    width: 95%;
+    height: 30px;
+    background: transparent;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #d21985;
+    font-size: 20px;
+    padding-left: 10px;
+    color: #e4f5ef6a; 
+}
+::placeholder{
+    font-size: 15px;
+    color: #00ff9585;
+    letter-spacing: 1px; 
+}
+.fa{
+    font-size: 20px;
+}
+#login_button{
+    position: relative;
+    width: 300px;
+    height: 40px;
+    transition: 1s;
+    margin-top: 70px; 
+}
+#login_button input{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    z-index: 10;
+    cursor: pointer;
+    font-size: 22px;
+    letter-spacing: 2px;
+    border: 1px solid #00ccff;
+    border-radius: 50px;
+    background-color: #e121b1;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    color: aliceblue;
+}
+button{
+  display: none;
+}
+</style>
+  </head>
+  <body>
+    <div class="chandu">
+    <div class="login_form_container">
+      <form method="post" action="/login">
+        <div class="login_form">
+        <h2>Login</h2>
+        <div class="input_group">
+          <i class="fa fa-user" style="font-size: 3em;"></i>
+            <input  type="text"  placeholder="Username" name="username" class="input_text"  autocomplete="off" required/>
+              </div>
+              <div class="input_group">
+               <i class="fa fa-mobile" style="font-size: 3em;"></i> 
+               <input
+                type="text"
+               placeholder="Phone number"
+               name="mobileNo"
+               class="input_text"
+               autocomplete="off"
+               required
+               />
+               </div>
+            <div  id="login_button">
+            <input type="submit" value="Get otp" />
+         </div>
+        </div>
+      </form>
+    </div>
+    </div>
+  </body> 
+</html>
+
+<!-- class="button_group" -->
+<!-- <a class="get_otp_button"  -->
+  <!-- <button> <a href="otpcheck.html">Get OTP</a></button> -->

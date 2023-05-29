@@ -1,12 +1,16 @@
+require('dotenv').config()
 const express=require("express");
 const bodyparser=require("body-parser");
+const jwt=require("jsonwebtoken");
 const mongoose=require("mongoose");
-const accountsid="AC5bbe331ea954d669beeafb90ec17a332";
-const authkey="751ca4f7a9133565dfa4957aed79261d";
+const path = require("path");
+const accountsid=process.env.ACCOUNT_SID;
+const authkey=process.env.AUTH_TOKEN;
 const client=require("twilio")(accountsid,authkey);
 const app=express();
 
-mongoose.connect("mongodb://127.0.0.1:27017/Check",{useNewUrlParser :true,useUnifiedTopology:true}).then(()=>{
+
+mongoose.connect(process.env.MONGODB_URL,{useNewUrlParser :true,useUnifiedTopology:true}).then(()=>{
   console.log("connected with mongodb")
   }).catch((e)=>{
     console.log(e);
@@ -32,12 +36,13 @@ let OTP,user;
 
 
 app.get("/",(req,res)=>{
-  res.render('login');
+  res.sendFile(path.join(__dirname+'/views/login.html'));
 });
 
 app.post("/login",async(req,res)=>{
   try{
     const {username,mobileNo}=req.body;
+    console.log(req.body);
 
     const isuser =await User.findOne({mobileNo});
     if(isuser){
@@ -61,14 +66,14 @@ app.post("/login",async(req,res)=>{
     await client.messages
       .create({
         body:`your Foodporium verification code is ${OTP} `,
-        to:"+917013251153",
-        from:'+13158175952'
+        to:`+91${mobileNo}`,
+        from:'+13158873771'
        }).then(() => {//res.status(200).json({msg: "message sent"})
         console.log("message sent");
       })
          .catch(err =>console.log(err));
 
-        res.render('otpcheck')
+        res.sendFile(path.join(__dirname+'/views/otpcheck.html'))
   } catch(e){
     res.status(500).json({error:e.message})
   }
@@ -76,7 +81,6 @@ app.post("/login",async(req,res)=>{
 
 app.post("/login/verify",async(req,res)=>{
   try{
-    console.log(req.body);
      const {otp}=req.body;
      if( otp!=OTP )
      {
@@ -84,7 +88,9 @@ app.post("/login/verify",async(req,res)=>{
       res.end("<h1>Incorrect otp</h1>");
      }
      user=await user.save();
+    const token=jwt.sign({id:user._id},process.env.SECRET_KEY)
     res.end("<h1>correct otp</h1>");
+
   }catch(e){
     res.status(500).json({error:e.message})
   }
@@ -92,8 +98,7 @@ app.post("/login/verify",async(req,res)=>{
 
 
 
-
-const port = 8000;
+const port=process.env.PORT;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
